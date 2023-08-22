@@ -1,0 +1,22 @@
+variable "folder_id" {
+    type = string
+    default = "xxxxxxxxxxxxxxxxxxxx"
+    // Sensitive vars are hidden from output as of Packer v1.6.5
+    sensitive = true
+}
+
+variable "source_image_family" {
+    type = string
+    default = "ubuntu-1604-lts"
+}
+
+variable "service_account_key_file" {
+    type = string
+    default = "key.json"
+    sensitive = true
+}
+
+variable "disk_size_gb" {
+    type = number
+    default = 5
+}
