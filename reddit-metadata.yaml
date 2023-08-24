@@ -1,0 +1,27 @@
+#cloud-config
+
+ssh_pwauth: false
+users:
+  - name: yc-user
+    gecos: YandexCloud User
+    sudo: ALL=(ALL) NOPASSWD:ALL
+    shell: /bin/bash
+    ssh_authorized_keys:
+      - "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIKnN7X7+ocNCdY71Ay8Aex39kCQtpkO2NSdtv3iB5Ob2 appuser"
+
+package_update: true
+package_upgrade: true
+packages:
+  - mongodb
+  - ruby-full
+  - ruby-bundler
+  - build-essential
+  - git
+
+runcmd:
+  - systemctl start mongodb
+  - systemctl enable mongodb
+  - cd /home/yc-user
+  - git clone -b monolith https://github.com/express42/reddit.git
+  - cd reddit && bundle install
+  - puma -d
