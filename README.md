@@ -1,6 +1,88 @@
 # Репозиторий shrkga_infra
 Описание выполненных домашних заданий.
 
+## ДЗ #5. Сборка образов VM при помощи Packer
+Выполнены все основные и дополнительные пункты ДЗ.
+
+#### Самостоятельная работа
+- Установлен Packer;
+- Создан сервисный аккаунт для Packer в Yandex.Cloud;
+- Делегированы права сервисному аккаунту для Packer;
+- Создан service account key file, добавлен в `.gitignore`;
+- Создан файл-шаблон Packer;
+- Создан файл конфигурации Builder, добавлены Provisioners;
+- Созданы скрипты для Provisioners;
+- Проведена валидация, устранена ошибка с IPv4;
+- Создан образ ВМ, на базе образа создана ВМ;
+- Внутри ВМ установлено приложение Monolith Reddit;
+- Проверена работа приложения через открытие адреса http://<внешний-IP-машины>:9292
+- Файлы конфигурации созданы в форматах `.hcp` и `.json`. Файлы с переменными добавлены в `.gitignore`;
+```
+$ packer -v
+1.9.4
+
+$ ls packer/*.hcl
+packer/config.pkr.hcl  packer/ubuntu16.pkr.hcl  packer/variables.pkr.hcl
+
+$ ls packer/*.json
+packer/immutable.json  packer/key.json  packer/ubuntu16.json  packer/variables.json
+```
+
+#### Дополнительное задание
+- Параметризирован созданный шаблон. Набор параметров включает:
+  - ID каталога;
+  - ID source-образа;
+  - Путь к `service_account_key_file`;
+  - Размер диска `disk_size_gb`;
+  - Другие опции билдера.
+- С целью практики подхода к управлению инфраструктурой Immutable infrastructure, построен bake-образ на базе шаблона `immutable.json`:
+  - `image_family` у получившегося образа задан `reddit-full`;
+  - В папке `packer/files` размещен файл конфигурации сервиса `puma.service` с целью использования `systemd unit` для запуска приложения при старте инстанса.
+
+```
+$ cat packer/files/puma.service
+
+[Unit]
+Description=Puma
+After=network.target
+
+[Service]
+Type=simple
+WorkingDirectory=/server/reddit
+ExecStart=/usr/local/bin/puma
+Restart=always
+
+[Install]
+WantedBy=multi-user.target
+```
+
+- Выполнена автоматизация создания ВМ:
+  - В папке `config-scripts` создан скрипт `create-reddit-vm.sh`, который создает ВМ с помощью Yandex.Cloud CLI.
+
+```
+$ cat config-scripts/create-reddit-vm.sh
+
+#!/bin/bash
+
+set -e
+
+FOLDER_ID=$(yc config list | grep folder-id | awk '{print $2}')
+
+yc compute instance create \
+  --name reddit-app \
+  --hostname reddit-app \
+  --memory 2 \
+  --cores 2 \
+  --core-fraction 20 \
+  --preemptible \
+  --create-boot-disk image-folder-id=${FOLDER_ID},image-family=reddit-full,size=10GB \
+  --network-interface subnet-name=default-ru-central1-b,nat-ip-version=ipv4 \
+  --ssh-key ~/.ssh/appuser.pub
+  ```
+
+В результате ВМ в Yandex.Cloud доступна через `ssh appuser@<внешний-IP-машины>`, приложение Monolith Reddit доступно по адресу:<br>
+http://<внешний-IP-машины>:9292
+
 ## ДЗ #4. Деплой тестового приложения
 Выполнены все основные и дополнительные пункты ДЗ.
 
