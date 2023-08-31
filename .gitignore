@@ -7,3 +7,4 @@ packer/key.json
 *.tfvars
 .terraform/
 key.json
+terraform/config.tf
