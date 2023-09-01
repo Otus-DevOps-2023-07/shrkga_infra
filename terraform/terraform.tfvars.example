@@ -1,0 +1,10 @@
+cloud_id                 = "<cloud-id>"
+folder_id                = "<folder-id>"
+image_id                 = "<image-id>"
+public_key_path          = "~/.ssh/yc.pub"
+subnet_id                = "<subnet-id>"
+service_account_key_file = "key.json.example"
+private_key_path         = "~/.ssh/yc"
+app_count                = 2
+
+# zone                     = "ru-central1-a"
