@@ -25,7 +25,16 @@ variable "service_account_key_file" {
 variable "private_key_path" {
   description = "SSH private key"
 }
-variable "app_count" {
-  description = "Number of app instances"
-  default     = 1
+
+variable "app_disk_image" {
+  description = "Disk image for reddit app"
+  default     = "reddit-app-base"
+}
+variable "db_disk_image" {
+  description = "Disk image for reddit db"
+  default     = "reddit-db-base"
+}
+
+variable "environment" {
+  description = "Prod or stage"
 }
