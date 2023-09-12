@@ -21,3 +21,8 @@ variable "db_ip" {
 variable "environment" {
   description = "Prod or stage"
 }
+variable "provision" {
+  description = "Enable provisioning or not"
+  type        = bool
+  default     = false
+}

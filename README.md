@@ -1,6 +1,91 @@
 # Репозиторий shrkga_infra
 Описание выполненных домашних заданий.
 
+## ДЗ #8. Управление конфигурацией. Знакомство с Ansible
+Выполнены все основные и дополнительные пункты ДЗ (⭐)
+
+#### Основное задание
+- Выполнены установка и настройка Ansible;
+- В модули Terraform app и db добавлен функционал запуска команд в провиженере `remote-exec` в зависимости от значения переменной `provision`. Таким образом, для текущей задачи поднятие сервисов средствами Terraform не выполняется;
+```
+$ cat terraform/modules/app/variables.tf
+...
+variable "provision" {
+  description = "Enable provisioning or not"
+  type        = bool
+  default     = false
+}
+...
+```
+```
+$ cat terraform/modules/app/main.tf
+...
+provisioner "file" {
+  source      = "${path.module}/deploy.sh"
+  destination = "/tmp/deploy.sh"
+}
+provisioner "remote-exec" {
+  inline = concat(["echo Provisioning"], [for command in ["chmod +x /tmp/deploy.sh", "/tmp/deploy.sh"]: command if var.provision])
+}
+...
+```
+- С помощью Terraform в YC запущены `appserver` и `dbserver` из предыдущих заданий;
+- Изучены различные способы создания Inventory file;
+- Реализовано управление ВМ `appserver` и `dbserver` в YC при помощи Ansible;
+- Определены параметры по умолчанию в файле `ansible.cfg`;
+- Выполнена работа с группами хостов;
+- Создан YAML inventory файл;
+- Все команды из ДЗ выполнены успешно;
+- Написан плейбук `clone.yml`. В плейбук добавлен таск по установке `git`, т.к. в инстансе он отсутствует;
+```
+$ cat clone.yml
+---
+- name: Clone
+  hosts: app
+  tasks:
+    - name: Install git
+      become: true
+      apt:
+        name: git
+        state: latest
+        update_cache: yes
+    - name: Clone repo
+      git:
+        repo: https://github.com/express42/reddit.git
+        dest: /home/ubuntu/reddit
+```
+- Выполнена команда `ansible-playbook clone.yml` с уже существующим локальным клоном репозитория и без него. Получились разные варианты:
+  - В первом случае результат `changed=0`, т.к. фактически менять нечего и репозиторий был склонирован через `git clone` на предыдущем шаге;
+  - Во втором случае результат `changed=1`, т.к. локальной копии репозитория не было и его клон выполнен непосредственно при работе модуля git ansible.
+
+#### Задание со ⭐
+- Изучены две различных схемы JSON-inventory -- статическая и динамическая;
+- Создан файл `inventory.json` в формате динамического инвентори;
+- Создан файл `inventory-static.json` в формате статического инвентори;
+- Проведен анализ различия статического и динамического форматов, понято значение группы `_meta`, а также различие формата при описании группы хостов в переменной `hosts`;
+- Написан bash-скрипт `inventory.sh`, который генерирует json массив в формате динамического инвентори. При этом IP адреса инстансов `app` и `db` запрашиваются в YC через `yc compute instance get`.<br>Для ускорения работы скрипта их можно определить вручную в соответствующих переменных;
+- Скрипт `inventory.sh` поддерживает ключи `--list` и `--host`;
+- В файле `ansible.cfg` сделаны настройки для работы с JSON-inventory;
+- Команда `ansible all -m ping` выполняется успешно.
+```
+$ ansible all -m ping
+
+84.201.159.224 | SUCCESS => {
+    "ansible_facts": {
+        "discovered_interpreter_python": "/usr/bin/python3"
+    },
+    "changed": false,
+    "ping": "pong"
+}
+158.160.55.69 | SUCCESS => {
+    "ansible_facts": {
+        "discovered_interpreter_python": "/usr/bin/python3"
+    },
+    "changed": false,
+    "ping": "pong"
+}
+```
+
 ### Информация относительно невозможности пройти тест в Github Actions
 По аналогии с прошлым ДЗ сделано изрядное количество костылей для прохождения нерабочих тестов. Их описание добавлено при помощи комментариев в затронутых файлах.
 
