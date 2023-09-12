@@ -1,5 +1,3 @@
-# Crutches for non-working tests
-
 variable "cloud_id" {
   description = "Cloud"
 }
@@ -8,7 +6,7 @@ variable "folder_id" {
 }
 variable "zone" {
   description = "Zone"
-  default = "ru-central1-a"
+  default     = "ru-central1-a"
 }
 variable "service_account_key_file" {
   description = "key.json"
