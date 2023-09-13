@@ -1,4 +1,5 @@
 #!/bin/bash
+
 set -e
 APP_DIR=${1:-$HOME}
 

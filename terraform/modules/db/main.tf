@@ -45,7 +45,11 @@ resource "yandex_compute_instance" "db" {
     private_key = file(var.private_key_path)
   }
 
+  provisioner "file" {
+    source      = "${path.module}/deploy.sh"
+    destination = "/tmp/deploy.sh"
+  }
   provisioner "remote-exec" {
-    script = "${path.module}/deploy.sh"
+    inline = concat(["echo Provisioning"], [for command in ["chmod +x /tmp/deploy.sh", "/tmp/deploy.sh"]: command if var.provision])
   }
 }

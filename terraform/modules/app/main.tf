@@ -49,7 +49,11 @@ resource "yandex_compute_instance" "app" {
     content     = templatefile("${path.module}/puma.service", { internal_ip_address_db = "${var.db_ip}" })
     destination = "/tmp/puma.service"
   }
+  provisioner "file" {
+    source      = "${path.module}/deploy.sh"
+    destination = "/tmp/deploy.sh"
+  }
   provisioner "remote-exec" {
-    script = "${path.module}/deploy.sh"
+    inline = concat(["echo Provisioning"], [for command in ["chmod +x /tmp/deploy.sh", "/tmp/deploy.sh"]: command if var.provision])
   }
 }

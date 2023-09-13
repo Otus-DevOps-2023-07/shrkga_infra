@@ -18,3 +18,8 @@ variable "app_count" {
 variable "environment" {
   description = "Prod or stage"
 }
+variable "provision" {
+  description = "Enable provisioning or not"
+  type        = bool
+  default     = false
+}
