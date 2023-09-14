@@ -8,3 +8,4 @@ public_key_path          = "~/.ssh/yc.pub"
 private_key_path         = "~/.ssh/yc"
 service_account_key_file = "../key.json"
 environment              = "stage"
+provision                = false

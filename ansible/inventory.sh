@@ -3,8 +3,8 @@
 if [[ $1 == "--list" ]]; then
     # apphost=$(yc compute instance get --name reddit-app-prod-0 --format=json | jq -r '.network_interfaces[0].primary_v4_address.one_to_one_nat.address')
     # dbhost=$(yc compute instance get --name reddit-db-prod-0 --format=json | jq -r '.network_interfaces[0].primary_v4_address.one_to_one_nat.address')
-    apphost='158.160.55.69'
-    dbhost='84.201.159.224'
+    apphost='51.250.70.24'
+    dbhost='158.160.122.226'
 
     cat <<EOT
 {

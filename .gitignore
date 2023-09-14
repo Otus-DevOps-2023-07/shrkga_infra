@@ -5,3 +5,4 @@
 .terraform/
 key.json
 provider.tf
+.vscode/
