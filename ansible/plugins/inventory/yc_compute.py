@@ -19,9 +19,9 @@ DOCUMENTATION = r'''
     version_added: "1.3.0"
     options:
       plugin:
-        description: The name of this plugin, it should always be set to C(community.general.yc_compute) for this plugin to recognize it as it's own.
+        description: The name of this plugin, it should always be set to C(yc_compute) for this plugin to recognize it as it's own.
         required: yes
-        choices: ['community.general.yc_compute']
+        choices: ['yc_compute']
         type: str
       auth_kind:
         description: The type of credential used.
@@ -81,7 +81,7 @@ DOCUMENTATION = r'''
 '''
 
 EXAMPLES = r'''
-plugin: community.general.yc_compute
+plugin: yc_compute
 folders:  # List inventory hosts from these folders.
   - <your_folder_id>
 filters:
@@ -131,7 +131,7 @@ from google.protobuf.json_format import MessageToDict
 
 
 class InventoryModule(BaseInventoryPlugin, Constructable, Cacheable):
-    NAME = 'community.general.yc_compute'
+    NAME = 'yc_compute'
 
     def __init__(self):
         super(InventoryModule, self).__init__()

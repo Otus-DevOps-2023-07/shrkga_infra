@@ -1,8 +1,10 @@
+.terraform/
+.venv/
+.vscode/
+__pycache__/
 *.tfstate
 *.tfstate.*.backup
 *.tfstate.backup
 *.tfvars
-.terraform/
 key.json
 provider.tf
-.vscode/

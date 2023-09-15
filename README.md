@@ -20,6 +20,86 @@
   - Написан общий плейбук `site.yml` для импорта трех предыдущих плейбуков;
   - Все проверки завершились успешно;
 
+#### Задание со ⭐
+- В рамках задания "Использовать dynamic inventory для Yandex Cloud" нагуглен плагин `yc_compute.py`;
+- Плагин нерабочий, чтобы он заработал, пришлось в его коде поменять название с `community.general.yc_compute` на `yc_compute`;
+
+Процесс установки плагина и зависимостей:
+```
+cd ansible
+mkdir -p plugins/inventory
+curl https://raw.githubusercontent.com/st8f/community.general/yc_compute/plugins/inventory/yc_compute.py | sed -e 's/community\.general\.yc_compute/yc_compute/g' > plugins/inventory/yc_compute.py
+pip install yandexcloud
+```
+
+- Создан файл inventory_yc.yml с применением плагина `yc_compute` и функционала `keyed_groups` (группируем хосты по метке `tags`):
+```
+---
+plugin: yc_compute
+folders:
+  - b1glt5c0u97ip5ne26kt
+filters:
+  - status == 'RUNNING'
+auth_kind: serviceaccountfile
+service_account_file: ../packer/key.json
+compose:
+  ansible_host: network_interfaces[0].primary_v4_address.one_to_one_nat.address
+
+keyed_groups:
+  - key: labels['tags']
+```
+
+- Содержимое файла `ansible.cfg` приведено к виду:
+```
+[defaults]
+inventory = ./inventory_yc.yml
+remote_user = appuser
+private_key_file = ~/.ssh/yc
+host_key_checking = False
+retry_files_enabled = False
+
+inventory_plugins=./plugins/inventory
+
+[inventory]
+enable_plugins = yc_compute
+```
+
+- Проверка инвентори:
+```
+$ ansible-inventory --list --yaml
+
+all:
+  children:
+    _reddit_app:
+      hosts:
+        51.250.71.210:
+          ansible_host: 51.250.71.210
+    _reddit_db:
+      hosts:
+        51.250.88.50:
+          ansible_host: 51.250.88.50
+```
+
+- Пробуем пинг:
+```
+$ ansible all -m ping
+
+51.250.71.210 | SUCCESS => {
+    "ansible_facts": {
+        "discovered_interpreter_python": "/usr/bin/python3"
+    },
+    "changed": false,
+    "ping": "pong"
+}
+51.250.88.50 | SUCCESS => {
+    "ansible_facts": {
+        "discovered_interpreter_python": "/usr/bin/python3"
+    },
+    "changed": false,
+    "ping": "pong"
+}
+```
+
 #### Самостоятельное задание
 - Выполнен провижининг в Packer;
 - Созданы плейбуки `ansible/packer_app.yml` и `ansible/packer_db.yml`:
