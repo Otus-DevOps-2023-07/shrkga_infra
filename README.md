@@ -4,6 +4,36 @@
 ## ДЗ #9. Продолжение знакомства с Ansible: templates, handlers, dynamic inventory, vault, tags
 Выполнены все основные и дополнительные пункты ДЗ
 
+#### Расширение функционала Terraform из прошлого ДЗ (спасибо <https://github.com/Swenum>)
+Добавлена автоматическая генерация файла инвертори для Ansible при развертывании инфраструктуры через Terraform.
+
+Создан файл шаблона `terraform/prod/inventory.tmpl`:
+```
+all:
+  hosts:
+      app:
+        ansible_host: ${external_ip_address_app}
+      db:
+        ansible_host: ${external_ip_address_db}
+  vars:
+    remote_user: appuser
+    private_key_file: ~/.ssh/yc
+    db_host_internal: ${internal_ip_address_db}
+```
+В файл `terraform/prod/outputs.tf` добавлен ресурс для создания файла `ansible/inventory_${var.environment}.yml`:
+```
+### The Ansible inventory file
+resource "local_file" "AnsibleInventory" {
+  content = templatefile("inventory.tmpl", {
+    external_ip_address_app = module.app.external_ip_address_app.0
+    external_ip_address_db  = module.db.external_ip_address_db.0
+    internal_ip_address_db  = module.db.internal_ip_address_db.0
+  })
+  filename = "../../ansible/inventory_${var.environment}.yml"
+}
+```
+В результате после применения `terraform apply` генерируется YAML файл с актуальными IP адресами ВМ в YC.
+
 #### Основное задание
 - Изучен подход "Один playbook, один сценарий";
   - Изучены Tasks и Handlers;
@@ -28,11 +58,12 @@
 ```
 cd ansible
 mkdir -p plugins/inventory
-curl https://raw.githubusercontent.com/st8f/community.general/yc_compute/plugins/inventory/yc_compute.py | sed -e 's/community\.general\.yc_compute/yc_compute/g' > plugins/inventory/yc_compute.py
+curl https://raw.githubusercontent.com/st8f/community.general/yc_compute/plugins/inventory/yc_compute.py | \
+  sed -e 's/community\.general\.yc_compute/yc_compute/g' > plugins/inventory/yc_compute.py
 pip install yandexcloud
 ```
 
-- Создан файл inventory_yc.yml с применением плагина `yc_compute` и функционала `keyed_groups` (группируем хосты по метке `tags`):
+- Создан файл `inventory_yc.yml` с использованием плагина `yc_compute` и функционала `keyed_groups` (группируем хосты по метке `tags`):
 ```
 ---
 plugin: yc_compute
