@@ -38,3 +38,8 @@ variable "db_disk_image" {
 variable "environment" {
   description = "Prod or stage"
 }
+variable "provision" {
+  description = "Enable provisioning or not"
+  type        = bool
+  default     = false
+}

@@ -17,6 +17,7 @@ variable "app_count" {
 }
 variable "db_ip" {
   description = "database ip"
+  default     = "127.0.0.1"
 }
 variable "environment" {
   description = "Prod or stage"

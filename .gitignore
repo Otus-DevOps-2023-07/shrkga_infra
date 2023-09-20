@@ -1,7 +1,22 @@
+key.json
+provider.tf
+
+# Terraform
+.terraform/
 *.tfstate
 *.tfstate.*.backup
 *.tfstate.backup
 *.tfvars
-.terraform/
-key.json
-provider.tf
+
+# Python
+.venv/
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Visual Studio Code
+.vscode/*
+!.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/launch.json
+!.vscode/extensions.json

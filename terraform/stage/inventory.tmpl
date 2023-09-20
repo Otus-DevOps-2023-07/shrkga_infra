@@ -1,0 +1,10 @@
+all:
+  hosts:
+      app:
+        ansible_host: ${external_ip_address_app}
+      db:
+        ansible_host: ${external_ip_address_db}
+  vars:
+    remote_user: appuser
+    private_key_file: ~/.ssh/yc
+    db_host_internal: ${internal_ip_address_db}
