@@ -1,5 +1,6 @@
 key.json
 provider.tf
+jdauphant.nginx
 
 # Terraform
 .terraform/
