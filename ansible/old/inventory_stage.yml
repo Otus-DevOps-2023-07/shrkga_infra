@@ -1,0 +1,10 @@
+all:
+  hosts:
+      app:
+        ansible_host: 158.160.109.93
+      db:
+        ansible_host: 158.160.57.246
+  vars:
+    remote_user: appuser
+    private_key_file: ~/.ssh/yc
+    db_host_internal: 10.128.0.12
