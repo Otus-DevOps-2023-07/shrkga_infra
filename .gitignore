@@ -15,6 +15,14 @@ __pycache__/
 *.py[cod]
 *$py.class
 
+# Vagrant & molecule
+.vagrant/
+*.log
+*.pyc
+.molecule
+.cache
+.pytest_cache
+
 # Visual Studio Code
 .vscode/*
 !.vscode/settings.json
